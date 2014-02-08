@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -N Ba1221
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=24:00:00
+#PBS -q low
+#PBS -j oe
+#PBS -o mpi.out
+#PBS -e mpi.err
+#PBS -V
+
+cd ${PBS_O_WORKDIR}
+
+NP=`cat $PBS_NODEFILE|wc -l`
+
+## Openmpi-1.4.3 ##
+#
+export MKL_SERIAL=YES
+export MKL_NUM_THREADS=1
+export OMP_NUM_THREADS=1
+export GOTO_NUM_THREADS=1
+
+## vasp 
+#
+
+#MPIRUN=/public/program/mpi/openmpi/1.4.3/icc_ifort/bin/mpirun
+#vasp_exe=/public/program/vasp/5.2/vasp_wannier
+exe=../src/unfold.x
+
+#mpirun  -np $NP ${vasp_exe}  > vasp.log
+
+mpirun -np ${NP} ${exe} > unfold.log
+
