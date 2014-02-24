@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -N Ba1221
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=1:phase1
 #PBS -l walltime=24:00:00
 #PBS -q low
 #PBS -j oe
