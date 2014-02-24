@@ -6,6 +6,7 @@ MODULE mapdata
   !
   real(dp), dimension(1:3, 1:3) :: scell
   real(dp), dimension(1:3, 1:3) :: ksi
+  real(dp)  volrat
   real(dp), allocatable :: rv(:, :)
   integer, allocatable :: nn(:), iiorb(:, :)
   integer norb_uc, norb_sc
@@ -28,6 +29,13 @@ MODULE mapdata
       do ii=1, 3
         read(fin, *) scell(:, ii)
       enddo
+      volrat=scell(1,1)*scell(2,2)*scell(3,3) &
+            +scell(1,2)*scell(2,3)*scell(3,1) &
+            +scell(1,3)*scell(2,1)*scell(3,2) &
+            -scell(1,3)*scell(2,2)*scell(3,1) &
+            -scell(1,2)*scell(2,1)*scell(3,3) &
+            -scell(1,1)*scell(2,3)*scell(3,2)
+      volrat=abs(volrat)
       !  Transformation matrix from UC lattice to SC lattice : A'=scell*A 
       read(fin, *) norb_uc, norb_sc
       !  Number of orbitals in single Unit cell; number of orbitals in supercell

@@ -120,8 +120,6 @@ void extend_wann(wanndata * sc, wanndata * uc, int nx, int ny, int nz) {
 
   init_wanndata(sc);
 
-  printf(" ##: Supercell hamiltonian dimensions determined.\n");
-
   ii=0;                                  /*  Set weight & rvec */
   for(irpt=0; irpt<uc->nrpt; irpt++) {
     if ((fabs((uc->rvec+irpt)->x[0])<=nr[0]) &&
@@ -134,9 +132,6 @@ void extend_wann(wanndata * sc, wanndata * uc, int nx, int ny, int nz) {
       ii++;
     }
   }
-
-  printf(" ##: weight & rvecs determined.\n");
-  printf(" ##:  sc->nrpt: %5d\n", sc->nrpt);
 
   for(irpt=0; irpt<sc->nrpt; irpt++) {
     for(iorb=0; iorb<sc->norb; iorb++) {
@@ -213,8 +208,6 @@ int main(int argc, char ** argv) {
   sscanf(argv[4], " %d", &nz);
 
   read_ham(&wann_uc, argv[1]);
-  printf(" %5d x %5d Hamiltonian read for %6d rpts.\n", wann_uc.norb, wann_uc.norb, wann_uc.nrpt);
-  printf("   Extending it to %5d x %5d x %5d supercell.\n", nx, ny, nz);
   extend_wann(&wann_sc, &wann_uc, nx, ny, nz);
   write_ham(&wann_sc);
 }

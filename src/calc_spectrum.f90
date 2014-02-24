@@ -4,7 +4,7 @@ SUBROUTINE calc_spectrum_k(kv_uc)
   !
   use lapack95,    only : heev
   use constants,   only : dp, cmplx_0, cmplx_i, twopi
-  use mapdata,     only : ksi, rv, norb_uc, nn, iiorb 
+  use mapdata,     only : ksi, rv, norb_uc, nn, iiorb, volrat
   use specdata,    only : spec, nen, ene, eig, work
   use wanndata,    only : norb, nrpt, rvec, weight, ham
   !
@@ -61,7 +61,7 @@ SUBROUTINE calc_spectrum_k(kv_uc)
     enddo ! iorb_uc
     !
     do ii=1, nen
-      spec(ii)=spec(ii)+ratio*delta(ene(ii)-eig(jorb))
+      spec(ii)=spec(ii)+ratio*delta(ene(ii)-eig(jorb))/volrat
     enddo ! ii
     !
   enddo ! jorb
