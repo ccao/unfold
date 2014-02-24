@@ -10,7 +10,7 @@ $(LIBS):
 	cd ..
 
 unfold: unfold.f90 $(objects) $(LIBS)
-	$(F90) $(F90FLAGS) -fpp -o unfold.x unfold.f90 $(objects) $(LIBS) -I$(MKLINCLUDE) -I../modules -I. $(LAPACK95LIBS) $(MKLLIBS)
+	$(F90) $(F90FLAGS) -cpp -o unfold.x unfold.f90 $(objects) $(LIBS) -I../modules -I. $(LAPACK95LIBS) $(MKLLIBS)
 
 clean:
 	rm -rf *.o *.mod *.x
