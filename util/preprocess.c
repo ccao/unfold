@@ -3,26 +3,15 @@
 #include <math.h>
 #include <string.h>
 
-#define MAXLEN 512
-#define MAXN   10
-#define eps   1E-5
+#include "constants.h"
+#include "vector.h"
+#include "poscar.h"
 
-typedef struct __vector{
-  double x[3];
-} vector;
 
 typedef struct __mapping{
   int nat;
   int rvec[3];
 } mapping;
-
-typedef struct __poscar{
-  int nsp;
-  int nat;
-  int * nat_per_sp;
-  vector cell[3];
-  vector * tau;
-} poscar;
 
 void orbital_index(int *** orb_idx, poscar uc, int * norb_sp) {
   int isp, ii, iat, iorb, iiorb;
@@ -46,15 +35,6 @@ void orbital_index(int *** orb_idx, poscar uc, int * norb_sp) {
       iat++;
     }
   }
-}
-
-int equal(vector v1, vector v2) {
-  if ((fabs(v1.x[0]-v2.x[0])<eps) &&
-      (fabs(v1.x[1]-v2.x[1])<eps) &&
-      (fabs(v1.x[2]-v2.x[2])<eps))
-    return 1;
-  else
-    return 0;
 }
 
 int search_transform(int * t, vector target, vector * source) {
@@ -141,65 +121,11 @@ void read_input(char * fsc, char * fuc, int * nsp, int ** norb_sp, FILE * fin) {
   sscanf(line, " %d", nsp);
   (*norb_sp)=(int *) malloc(sizeof(int)*(*nsp));
   fgets(line, MAXLEN, fin);
-  p=strtok(line, " \t");
+  p=strtok(line, " ");
   for (ii=0; ii<(*nsp); ii++) {
     sscanf(p, "%d", (*norb_sp)+ii);
-    p=strtok(NULL, " \t");
+    p=strtok(NULL, " ");
   }
-}
-
-void read_poscar(poscar * psc, char * fn) {
-  FILE * fin;
-  char line[MAXLEN];
-  char * p;
-  double lat;
-  int ii;
-
-  fin=fopen(fn, "r");
-  fgets(line, MAXLEN, fin);
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %lf", &lat);
-
-  for(ii=0; ii<3; ii++) {
-    fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf", (psc->cell+ii)->x, (psc->cell+ii)->x+1, (psc->cell+ii)->x+2);
-    (psc->cell[ii]).x[0]*=lat;
-    (psc->cell[ii]).x[1]*=lat;
-    (psc->cell[ii]).x[2]*=lat;
-  }
-
-  fgets(line, MAXLEN, fin);
-  ii=0;
-  p=strtok(line, " \t");
-  while(p!=NULL) {
-    ii++;
-    p=strtok(NULL, " \t");
-  }
-  psc->nsp=ii;
-
-  psc->nat_per_sp=(int *) malloc(sizeof(int)*psc->nsp);
-
-  fgets(line, MAXLEN, fin);
-
-  psc->nat=0;
-  p=strtok(line, " \t");
-  for(ii=0; ii<psc->nsp; ii++) {
-    sscanf(p, " %d", psc->nat_per_sp+ii);
-    psc->nat+=psc->nat_per_sp[ii];
-    p=strtok(NULL, " \t");
-  }
-  psc->tau=(vector *)malloc(sizeof(vector)*psc->nat);
-  fgets(line, MAXLEN, fin);
-  for(ii=0; ii<psc->nat; ii++) {
-    fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf ", (psc->tau+ii)->x, (psc->tau+ii)->x+1, (psc->tau+ii)->x+2);
-  }
-  fclose(fin);
-}
-
-void finalize(poscar psc) {
-  free(psc.nat_per_sp);
-  free(psc.tau);
 }
 
 void output_mapping(double scell[3][3], mapping *map, poscar uc, poscar sc, int * norb_sp, int ** orb_idx_at) {
@@ -262,8 +188,8 @@ int main(int argc, char ** argv) {
 
   output_mapping(scell, map, uc, sc, norb_sp, orb_idx_at); 
 
-  finalize(sc);
-  finalize(uc);
+  finalize_poscar(sc);
+  finalize_poscar(uc);
   free(map);
   free(norb_sp);
   for(ii=0; ii<uc.nat; ii++)

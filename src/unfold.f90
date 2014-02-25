@@ -22,6 +22,7 @@ program unfold
   !
   do ik=1, nkpt
     !
+    write(stdout, '(3F16.8)') kvec(:, ik)
     call calc_spectrum_k(kvec(:,ik))
     call output_spectrum
     !

@@ -4,81 +4,8 @@
 #include <stdlib.h>
 #include <complex.h>
 
-#define MAXLEN 512
-
-typedef struct __vector {
-  double x[3];
-} vector;
-
-typedef struct __wanndata {
-  int norb;
-  int nrpt;
-  double complex * ham;
-  vector * rvec;
-  int * weight;
-} wanndata;
-
-void init_wanndata(wanndata * wann) {
-  wann->ham=(double complex *) malloc(sizeof(double complex)*wann->norb*wann->norb*wann->nrpt);
-  wann->rvec=(vector *) malloc(sizeof(vector)*wann->nrpt);
-  wann->weight=(int *) malloc(sizeof(int)*wann->nrpt);
-}
-
-void read_ham(wanndata * wann, char * seed) {
-  FILE * fin;
-  int ii, iorb, jorb;
-  char line[MAXLEN];
-  char * pch;
-  int t1, t2, t3;
-  double a, b;
-
-  strcpy(line, seed);
-  strcat(line, "_hr.dat");
-
-  fin=fopen(line, "r");
-
-  fgets(line, MAXLEN, fin);
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %d", &(wann->norb));
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %d", &(wann->nrpt));
-
-  init_wanndata(wann);
-
-  for(ii=0; ii<wann->nrpt; ii++) {
-    if(ii%15==0) {
-      fgets(line, MAXLEN, fin);
-      pch=strtok(line, " ");
-    }
-    else {
-      pch=strtok(NULL, " ");
-    }
-    sscanf(pch, "%d", wann->weight+ii);
-  }
-
-  for(ii=0; ii<wann->nrpt; ii++) {
-    for(iorb=0; iorb<wann->norb; iorb++) {
-      for(jorb=0; jorb<wann->norb; jorb++) {
-        fgets(line, MAXLEN, fin);
-        sscanf(line, " %d %d %d %*d %*d %lf %lf ", &t1, &t2, &t3, &a, &b);
-        if (iorb==0 && jorb==0) {
-          (wann->rvec+ii)->x[0]=t1;
-          (wann->rvec+ii)->x[1]=t2;
-          (wann->rvec+ii)->x[2]=t3;
-        }
-        wann->ham[ii*wann->norb*wann->norb+iorb*wann->norb+jorb]=a+_Complex_I*b;
-      }
-    }
-  }
-
-  fclose(fin);
-}
-
-void finalize_wanndata(wanndata wann) {
-  free(wann.rvec);
-  free(wann.weight);
-  free(wann.ham);
-}
+#include "vector.h"
+#include "wanndata.h"
 
 int locate_rpt(wanndata * wann, int nr[3]) {
   int ii;
@@ -169,29 +96,6 @@ void extend_wann(wanndata * sc, wanndata * uc, int nx, int ny, int nz) {
   }
 }
 
-void write_ham(wanndata * wann) {
-  int irpt, iorb, jorb;
-  printf("# Wannier Hamiltonian extended to supercell\n");
-  printf("%5d\n%5d", wann->norb, wann->nrpt);
-  for(irpt=0; irpt<wann->nrpt; irpt++) {
-    if(irpt%15==0) printf("\n");
-    printf("%5d", wann->weight[irpt]);
-  }
-  printf("\n");
-
-  for(irpt=0; irpt<wann->nrpt; irpt++) {
-    for(iorb=0; iorb<wann->norb; iorb++) {
-      for(jorb=0; jorb<wann->norb; jorb++) {
-        printf("%5d%5d%5d%5d%5d%12.6f%12.6f\n", 
-          (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2], 
-          iorb+1, jorb+1,
-          creal(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]),
-          cimag(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]));
-      }
-    }
-  }
-}
-
 int main(int argc, char ** argv) {
   wanndata wann_uc, wann_sc;
   int nkx_uc, nky_uc, nkz_uc;
@@ -210,4 +114,7 @@ int main(int argc, char ** argv) {
   read_ham(&wann_uc, argv[1]);
   extend_wann(&wann_sc, &wann_uc, nx, ny, nz);
   write_ham(&wann_sc);
+
+  finalize_wanndata(wann_uc);
+  finalize_wanndata(wann_sc);
 }

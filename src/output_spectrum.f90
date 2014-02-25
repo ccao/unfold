@@ -10,7 +10,6 @@ SUBROUTINE output_spectrum
   integer ii
   !
   if (inode.eq.0) then
-    write(stdout, *) ''
     if (nkpt.eq.1) then
       write(stdout, '(1F12.8)') (spec(ii), ii=1, nen)
     else
