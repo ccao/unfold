@@ -27,6 +27,8 @@ int main(int argc, char ** argv) {
   poscar psc;
   vector a[3], b[3], k1, k2;
 
+  init_poscar(&psc);
+
   fin=fopen("POSCAR.uc", "r");
   read_poscar_header(&psc, fin);
   fclose(fin);
@@ -69,5 +71,6 @@ int main(int argc, char ** argv) {
     k1.x[2]=k2.x[2];
   }
   fclose(fin);
+  finalize_poscar(psc);
   return 0;
 }

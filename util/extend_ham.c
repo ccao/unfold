@@ -7,23 +7,13 @@
 #include "vector.h"
 #include "wanndata.h"
 
-int locate_rpt(wanndata * wann, int nr[3]) {
-  int ii;
-  for(ii=0; ii<wann->nrpt; ii++) {
-    if( (wann->rvec+ii)->x[0]==nr[0] &&
-        (wann->rvec+ii)->x[1]==nr[1] &&
-        (wann->rvec+ii)->x[2]==nr[2] )
-      return ii;
-  }
-  return -1;
-}
-
 void extend_wann(wanndata * sc, wanndata * uc, int nx, int ny, int nz) {
   int irpt, iorb, jorb;
   int iirpt, iiorb, jjorb;
   int ix[3], jx[3], nr[3];
   int nnr[3];
   int ii, jj;
+  vector vr;
 
   sc->norb=uc->norb*nx*ny*nz;            /*  Set norb */
 
@@ -82,7 +72,10 @@ void extend_wann(wanndata * sc, wanndata * uc, int nx, int ny, int nz) {
             (fabs(nr[2])>nnr[2]))
           sc->ham[irpt*sc->norb*sc->norb+iorb*sc->norb+jorb]=0.0;
         else {
-          iirpt=locate_rpt(uc, nr);
+          vr.x[0]=nr[0];
+          vr.x[1]=nr[1];
+          vr.x[2]=nr[2];
+          iirpt=locate_rpt(uc, vr);
           if(iirpt==-1) {
             printf("!!!ERROR: Cannot locate rpt for:\n");
             printf(" iorb: %5d, jorb: %5d, vec:(%5d,%5d,%5d) ==> (%5d,%5d,%5d)\n", iorb, jorb, (int)(sc->rvec+irpt)->x[0], (int)(sc->rvec+irpt)->x[1], (int)(sc->rvec+irpt)->x[2], nr[0], nr[1], nr[2]);

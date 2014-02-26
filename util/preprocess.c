@@ -6,12 +6,7 @@
 #include "constants.h"
 #include "vector.h"
 #include "poscar.h"
-
-
-typedef struct __mapping{
-  int nat;
-  int rvec[3];
-} mapping;
+#include "mapping.h"
 
 void orbital_index(int *** orb_idx, poscar uc, int * norb_sp) {
   int isp, ii, iat, iorb, iiorb;
@@ -67,45 +62,15 @@ void retrieve_scell(double scell[3][3], vector * sc, vector * uc) {
   }
 }
 
-int match(int *rv, vector x1, vector x2) {
-  int ii;
-  double dx[3];
-  for(ii=0; ii<3; ii++) {
-    rv[ii]=(int)(rint(x1.x[ii]-x2.x[ii]));
-    dx[ii]=x1.x[ii]-x2.x[ii]-rv[ii];
-  }
-  if( (fabs(dx[0])<eps) &&
-      (fabs(dx[1])<eps) &&
-      (fabs(dx[2])<eps) )
-    return 1;
-  else
-    return 0;
-}
-
-void retrieve_mapping(mapping * map, poscar sc, poscar uc, double scell[3][3]) {
+void transform_structure(poscar * sc, double scell[3][3]) {
   int ii, jj;
-  int rv[3];
   vector tv;
-
-  for(ii=0; ii<sc.nat; ii++) {
-    for(jj=0; jj<3; jj++) 
-      tv.x[jj]=scell[0][jj]*(sc.tau+ii)->x[0]+scell[1][jj]*(sc.tau+ii)->x[1]+scell[2][jj]*(sc.tau+ii)->x[2];
-
-    for(jj=0; jj<uc.nat; jj++) {
-      if( match(rv, tv, uc.tau[jj]) ){
-        (map+ii)->nat=jj;
-        (map+ii)->rvec[0]=rv[0];
-        (map+ii)->rvec[1]=rv[1];
-        (map+ii)->rvec[2]=rv[2];
-        break;
-      }
-    }
-    if (jj==uc.nat) {
-      printf("  !!! ERROR: cannot find match for atom %d in super cell\n", ii);
-      exit(0);
-    }
+  for(ii=0; ii<sc->nat; ii++) {
+    for(jj=0; jj<3; jj++)
+      tv.x[jj]=scell[0][jj]*(sc->tau+ii)->x[0]+scell[1][jj]*(sc->tau+ii)->x[1]+scell[2][jj]*(sc->tau+ii)->x[2];
+    for(jj=0; jj<3; jj++)
+      (sc->tau+ii)->x[jj]=tv.x[jj];
   }
-      
 }
 
 void read_input(char * fsc, char * fuc, int * nsp, int ** norb_sp, FILE * fin) {
@@ -146,7 +111,7 @@ void output_mapping(double scell[3][3], mapping *map, poscar uc, poscar sc, int 
   for(ii=0; ii<sc.nsp; ii++) {
     for(jj=0; jj<sc.nat_per_sp[ii]; jj++) {
       for(kk=0; kk<norb_sp[ii]; kk++) {
-        printf("%5d  %5d%5d%5d\n", orb_idx_at[(map+iat)->nat][kk], (map+iat)->rvec[0], (map+iat)->rvec[1], (map+iat)->rvec[2]);
+        printf("%5d  %5d%5d%5d\n", orb_idx_at[(map+iat)->nat][kk], (int)((map+iat)->rvec).x[0], (int)((map+iat)->rvec).x[1], (int)((map+iat)->rvec).x[2]);
       }
       iat++;
     }
@@ -182,9 +147,11 @@ int main(int argc, char ** argv) {
 
   retrieve_scell(scell, sc.cell, uc.cell);
 
+  transform_structure(&sc, scell);
+
   map=(mapping *) malloc(sizeof(mapping)*sc.nat);
 
-  retrieve_mapping(map, sc, uc, scell);
+  setup_mapping(map, sc.tau, uc.tau, NULL, NULL, NULL, sc.nat, uc.nat);
 
   output_mapping(scell, map, uc, sc, norb_sp, orb_idx_at); 
 

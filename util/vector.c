@@ -4,6 +4,33 @@
 #include "constants.h"
 #include "vector.h"
 
+int translate_match(vector * rv, vector x1, vector x2) {
+  int ii;
+  double dx[3];
+  for(ii=0; ii<3; ii++) {
+    rv->x[ii]=(int)(rint(x1.x[ii]-x2.x[ii]));
+    dx[ii]=x1.x[ii]-x2.x[ii]-rv->x[ii];
+  }
+  if( (fabs(dx[0])<eps) &&
+      (fabs(dx[1])<eps) &&
+      (fabs(dx[2])<eps) )
+    return 1;
+  else
+    return 0;
+}
+
+void vector_sub(vector * vr, vector v1, vector v2) {
+  int i;
+  for(i=0; i<3; i++)
+    vr->x[i]=v1.x[i]-v2.x[i];
+}
+
+void vector_add(vector * vr, vector v1, vector v2) {
+  int i;
+  for(i=0; i<3; i++)
+    vr->x[i]=v1.x[i]+v2.x[i];
+}
+
 int equal(vector v1, vector v2) {
   if ((fabs(v1.x[0]-v2.x[0])<eps) &&
       (fabs(v1.x[1]-v2.x[1])<eps) &&

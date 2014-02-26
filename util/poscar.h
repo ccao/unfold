@@ -9,6 +9,7 @@ typedef struct __poscar{
   vector * tau;
 } poscar;
 
+void init_poscar(poscar *psc);
 void read_poscar_header(poscar * psc, FILE * fin);
 void read_poscar(poscar * psc, char * fn);
 void finalize_poscar(poscar psc);
