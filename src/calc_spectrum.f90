@@ -1,8 +1,14 @@
-!include 'lapack.f90'
+#if defined _INTEL
+include 'lapack.f90'
+#endif
 
 SUBROUTINE calc_spectrum_k(kv_uc)
   !
-  use f95_lapack,    only : la_heev
+#if defined _INTEL
+  use lapack95,    only : heev
+#else
+  use f95_lapack,  only : la_heev
+#endif
   use constants,   only : dp, cmplx_0, cmplx_i, twopi
   use mapdata,     only : ksi, rv, norb_uc, nn, iiorb, volrat
   use specdata,    only : spec, nen, ene, eig, work
@@ -33,7 +39,11 @@ SUBROUTINE calc_spectrum_k(kv_uc)
     work(:,:)=work(:,:)+fact*ham(:,:,ii)
   enddo
   !
+#if defined _INTEL
+  call heev(work, eig, 'V', 'U', info)
+#else
   call la_heev(work, eig, 'V', 'U', info)
+#endif
   !
   ! Unfolding according to:
   !
