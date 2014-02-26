@@ -6,6 +6,12 @@
 #include "vector.h"
 #include "poscar.h"
 
+void init_poscar(poscar * psc) {
+  psc->nsp=0;
+  psc->nat_per_sp=NULL;
+  psc->tau=NULL;
+}
+
 void read_poscar_header(poscar * psc, FILE * fin) {
   char line[MAXLEN];
   char * p;
@@ -45,6 +51,8 @@ void read_poscar_header(poscar * psc, FILE * fin) {
     p=strtok(NULL, " ");
   }
 
+  psc->tau=NULL;
+
 }
 
 void read_poscar(poscar * psc, char * fn) {
@@ -67,6 +75,8 @@ void read_poscar(poscar * psc, char * fn) {
 }
 
 void finalize_poscar(poscar psc) {
-  free(psc.nat_per_sp);
-  free(psc.tau);
+  if(psc.nat_per_sp)
+    free(psc.nat_per_sp);
+  if(psc.tau)
+    free(psc.tau);
 }

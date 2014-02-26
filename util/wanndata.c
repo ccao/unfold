@@ -91,3 +91,18 @@ void write_ham(wanndata * wann) {
     }
   }
 }
+
+int locate_rpt(wanndata * wann, vector vr) {
+  int ii;
+  vector dx;
+  
+  for(ii=0; ii<wann->nrpt; ii++) {
+    vector_sub(&dx, wann->rvec[ii], vr);
+    if( fabs(dx.x[0])<eps &&
+        fabs(dx.x[1])<eps &&
+        fabs(dx.x[2])<eps )
+      return ii;
+  }
+  return -1;
+}
+
