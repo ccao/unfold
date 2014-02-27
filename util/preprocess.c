@@ -7,6 +7,7 @@
 #include "vector.h"
 #include "poscar.h"
 #include "mapping.h"
+#include "misc.h"
 
 void orbital_index(int *** orb_idx, poscar uc, int * norb_sp) {
   int isp, ii, iat, iorb, iiorb;
@@ -73,25 +74,6 @@ void transform_structure(poscar * sc, double scell[3][3]) {
   }
 }
 
-void read_input(char * fsc, char * fuc, int * nsp, int ** norb_sp, FILE * fin) {
-  char line[MAXLEN];
-  char *p;
-  int ii;
-
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %s", fuc);
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %s", fsc);
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %d", nsp);
-  (*norb_sp)=(int *) malloc(sizeof(int)*(*nsp));
-  fgets(line, MAXLEN, fin);
-  p=strtok(line, " ");
-  for (ii=0; ii<(*nsp); ii++) {
-    sscanf(p, "%d", (*norb_sp)+ii);
-    p=strtok(NULL, " ");
-  }
-}
 
 void output_mapping(double scell[3][3], mapping *map, poscar uc, poscar sc, int * norb_sp, int ** orb_idx_at) {
   int ii, jj, kk, iat;
@@ -133,7 +115,7 @@ int main(int argc, char ** argv) {
     exit(0);
   }
   fin=fopen(argv[1], "r");
-  read_input(fsc, fuc, &nsp, &norb_sp, fin);
+  nsp=read_orbdef(&norb_sp, fuc, fsc, fin);
   fclose(fin);
 
   read_poscar(&sc, fsc);

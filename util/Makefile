@@ -1,6 +1,6 @@
 include ../make.sys
 
-objects = vector.o wanndata.o poscar.o mapping.o
+objects = vector.o wanndata.o poscar.o mapping.o read_orbdef.o
 
 
 all: extend_ham preprocess reorder dope_ham

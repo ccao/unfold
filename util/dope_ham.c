@@ -8,6 +8,7 @@
 #include "wanndata.h"
 #include "poscar.h"
 #include "mapping.h"
+#include "misc.h"
 
 void setup_orblst(vector * orblst, int * orbsub, poscar psc) {
   int ii, jj, kk, iorb, iatm;
@@ -18,21 +19,7 @@ void setup_orblst(vector * orblst, int * orbsub, poscar psc) {
   FILE * fin;
 
   fin=fopen("orbital.def", "r");
-  fgets(line, MAXLEN, fin);
-  fgets(line, MAXLEN, fin);
-  fgets(line, MAXLEN, fin);
-  sscanf(line, " %d", &nsp);
-  if (nsp!=psc.nsp) {
-    printf("!!! WARNING: nsp in orbital definition incompatible with POSCAR.\n");
-  }
-  norb_per_sp=(int *) malloc(sizeof(int)*nsp);
-  fgets(line, MAXLEN, fin);
-  p=strtok(line, " ");
-  for(ii=0; ii<nsp; ii++) {
-    sscanf(p, "%d", norb_per_sp+ii);
-    p=strtok(NULL, " ");
-  }
-
+  nsp=read_orbdef(&norb_per_sp, NULL, NULL, fin);
   fclose(fin);
 
   iorb=0;

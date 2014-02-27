@@ -19,6 +19,12 @@ int translate_match(vector * rv, vector x1, vector x2) {
     return 0;
 }
 
+void vector_multiply(vector * vr, vector v1, int * n) {
+  int i;
+  for(i=0; i<3; i++)
+    vr->x[i]=v1.x[i]*n[i];
+}
+
 void vector_sub(vector * vr, vector v1, vector v2) {
   int i;
   for(i=0; i<3; i++)
@@ -76,4 +82,10 @@ double volume_product(vector v1, vector v2, vector v3) {
   vol=v1.x[0]*v2.x[1]*v3.x[2]+v1.x[1]*v2.x[2]*v3.x[0]+v1.x[2]*v2.x[0]*v3.x[1]-
      (v1.x[0]*v2.x[2]*v3.x[1]+v1.x[1]*v2.x[0]*v3.x[2]+v1.x[2]*v2.x[1]*v3.x[0]);
   return vol;
+}
+
+int isenclosed(vector v1, vector v2) {
+  return ( fabs(v1.x[0])<=v2.x[0] &&
+           fabs(v1.x[1])<=v2.x[1] &&
+           fabs(v1.x[2])<=v2.x[2] );
 }
