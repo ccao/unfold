@@ -7,19 +7,23 @@
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-CC=gcc
+CC=icc
 
 
-F90=gfortran
-F90FLAGS=-ffree-form -ffree-line-length-none
+F90=ifort
+F90FLAGS=-openmp -D_INTEL
 
-INCLUDES=-I../modules -I.
+INCLUDES=-I$(MKLINCLUDE) -I../modules -I.
 
-LAPACKLIBS=/usr/local/lib/liblapack.a /usr/local/lib/blas.a
-LAPACK95LIBS=/usr/local/lib/lapack95.a
+MKLINCLUDE=$(MKLROOT)/include
+MKLLIBS=-L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread
+
+LAPACKLIBS=$(MKLLIBS)
+LAPACK95LIBS=$(MKLROOT)/lib/intel64/libmkl_lapack95_lp64.a
 
 
 AR             = ar
 ARFLAGS        = ruv
 
 RANLIB         = ranlib
+

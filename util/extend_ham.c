@@ -120,7 +120,10 @@ int main(int argc, char ** argv) {
   fclose(fin);
 
   extend_wann(&wann_sc, &wann_uc, map, n);
+/*
   write_ham(&wann_sc);
+*/
+  write_reduced_ham(&wann_sc);
 
   finalize_wanndata(wann_uc);
   finalize_wanndata(wann_sc);

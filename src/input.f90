@@ -8,6 +8,7 @@ MODULE input
   real(dp), dimension(1:3,1:3) :: scell      ! Super Cell transformation matrix (from UC to SC)
   real(dp) elow, ehigh, de
   real(dp) beta
+  character(len=3) fmode                    ! Hamiltonian file mode: n: original wannier90 output r: reduced format
   integer nkpt                               ! Number of output kpoints (in UC)
   real(dp), allocatable :: kvec(:, :)        ! Output K-points
   !
@@ -38,7 +39,7 @@ CONTAINS
       !
       open(unit=fin, file="unfold.inp")
       !
-      read(fin, *) seed
+      read(fin, *) seed, fmode
       !
       read(fin, *) elow, ehigh, de
       read(fin, *) beta

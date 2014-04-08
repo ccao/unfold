@@ -3,10 +3,10 @@ program unfold
   !
   use para,        only : init_para, finalize_para
   use constants,   only : dp, stdout
-  use wanndata,    only : read_ham, finalize_wann
+  use wanndata,    only : read_ham, finalize_wann, read_reduced_ham
   use mapdata,     only : init_mapping, finalize_mapping
   use specdata,    only : nen, init_spec, finalize_spec
-  use input,       only : kvec, nkpt, seed, finalize_input, read_input
+  use input,       only : kvec, nkpt, seed, finalize_input, read_input, fmode
   !
   implicit none
   !
@@ -14,7 +14,11 @@ program unfold
   !
   call init_para
   call read_input
-  call read_ham(seed)
+  if(fmode(1:1).eq.'r') then
+    call read_reduced_ham(seed)
+  else
+    call read_ham(seed)
+  endif
   call init_spec
   call init_mapping
   !

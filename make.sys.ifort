@@ -1,12 +1,17 @@
 .SUFFIXES :
-.SUFFIXES : .o .f90
+.SUFFIXES : .o .f90 .c
 
 .f90.o:
-        $(F90) $(F90FLAGS) -fpp -c $(INCLUDES) $<
+	$(F90) $(F90FLAGS) -fpp -c $(INCLUDES) $<
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+CC=icc
 
 
 F90=mpif90
-F90FLAGS=-D__MPI
+F90FLAGS=-D__MPI -D_INTEL
 
 INCLUDES=-I$(MKLINCLUDE) -I../modules -I.
 

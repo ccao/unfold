@@ -4,6 +4,8 @@ objects = input.o calc_spectrum.o output_spectrum.o
 
 LIBS = ../modules/mod.a
 
+all: unfold
+
 $(LIBS):
 	cd ../modules
 	make mod.a
