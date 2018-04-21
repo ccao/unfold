@@ -13,7 +13,7 @@ SUBROUTINE output_spectrum
     if (nkpt.eq.1) then
       write(stdout, '(1F12.8)') (spec(ii), ii=1, nen)
     else
-      write(stdout, '(20F12.8)') (spec(ii), ii=1, nen)
+      write(stdout, '(10F16.9)') (spec(ii), ii=1, nen)
     endif
   endif
   !

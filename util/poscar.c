@@ -64,6 +64,9 @@ void read_poscar(poscar * psc, char * fn) {
   fin=fopen(fn, "r");
 
   read_poscar_header(psc, fin);
+  printf("Done after read header\n");
+  printf("Num of species: %d\n", psc->nsp);
+  printf("Num of atoms: %d\n", psc->nat);
 
   psc->tau=(vector *)malloc(sizeof(vector)*psc->nat);
   fgets(line, MAXLEN, fin);

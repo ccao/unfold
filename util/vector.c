@@ -68,9 +68,9 @@ double distance(vector v1, vector v2, vector * Tmat) {
 }
 
 void cross_product(vector * res, vector v1, vector v2) {
-  res->x[0]=v1.x[1]*v2.x[2];
-  res->x[1]=v1.x[2]*v2.x[0];
-  res->x[2]=v1.x[0]*v2.x[1];
+  res->x[0]=v1.x[1]*v2.x[2]-v1.x[2]*v2.x[1];
+  res->x[1]=v1.x[2]*v2.x[0]-v1.x[0]*v2.x[2];
+  res->x[2]=v1.x[0]*v2.x[1]-v1.x[1]*v2.x[0];
 }
 
 double dot_product(vector v1, vector v2) {

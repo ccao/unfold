@@ -10,11 +10,21 @@ int read_orbdef(int ** norb_per_sp, char * fuc, char * fsc, FILE * fin) {
   char * p;
 
   fgets(line, MAXLEN, fin);
-  if(!fuc)
-    sscanf(line, "%s", fuc);
+  p=line;
+  while((*p)!='\r' && (*p)!='\0' && (*p)!='\n') {
+    fuc[p-line]=(*p);
+    p++;
+  }
+  fuc[p-line]=0;
+
   fgets(line, MAXLEN, fin);
-  if(!fsc)
-    sscanf(line, "%s", fsc);
+  p=line;
+  while((*p)!='\r' && (*p)!='\0' && (*p)!='\n') {
+    fsc[p-line]=(*p);
+    p++;
+  }
+  fsc[p-line]=0;
+
   fgets(line, MAXLEN, fin);
   sscanf(line, " %d", &nsp);
   (* norb_per_sp)=(int *) malloc(sizeof(int)*nsp);

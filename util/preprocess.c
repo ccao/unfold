@@ -116,18 +116,24 @@ int main(int argc, char ** argv) {
   }
   fin=fopen(argv[1], "r");
   nsp=read_orbdef(&norb_sp, fuc, fsc, fin);
+  printf("OK after read orbdef\n");
   fclose(fin);
 
+  printf("Reading supercell structure from %s\n", fsc);
   read_poscar(&sc, fsc);
+  printf("Reading unit cell structure from %s\n", fuc);
   read_poscar(&uc, fuc);
+  printf("OK after reading poscar\n");
 
   if(nsp!=sc.nsp || nsp!=uc.nsp) {
     printf("  !!! WARNING: Number of species doesn't match.\n");
   }
 
   orbital_index(&orb_idx_at, uc, norb_sp);
+  printf("OK after orbital_index\n");
 
   retrieve_scell(scell, sc.cell, uc.cell);
+  printf("OK after supercell\n");
 
   transform_structure(&sc, scell);
 

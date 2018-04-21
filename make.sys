@@ -10,13 +10,13 @@
 CC=icc
 
 
-F90=ifort
-F90FLAGS=-openmp -D_INTEL
+F90=mpiifort
+F90FLAGS=-D__MPI -D_INTEL
 
 INCLUDES=-I$(MKLINCLUDE) -I../modules -I.
 
 MKLINCLUDE=$(MKLROOT)/include
-MKLLIBS=-L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread
+MKLLIBS=-L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
 
 LAPACKLIBS=$(MKLLIBS)
 LAPACK95LIBS=$(MKLROOT)/lib/intel64/libmkl_lapack95_lp64.a

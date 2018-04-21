@@ -20,4 +20,18 @@ set palette defined (0  1  1  1, \
 #                      6 '#ff7000',\
 #                      7 '#ee0000',\
 #                      8 '#7f0000')
-plot 'spec.dat' u 1:($2)/1000:3 matrix with image t ''
+#plot 'spec.dat' u 1:($2)/1000:3 matrix with image t ''
+
+set term png enhanced transparent truecolor size 3200,2400 font "Arial, 16"
+set out 'unfold.png'
+
+set view 0,0
+set xrange [0:0.27619260]
+set yrange [0:3]
+
+set cbrange [0:1]
+
+unset colorbox
+unset xtics
+unset ztics
+splot 'spec.dat' u 1:($2)/10:3 w pm3d t ''

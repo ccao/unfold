@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "constants.h"
 #include "vector.h"
 #include "poscar.h"
@@ -57,13 +58,15 @@ int main(int argc, char ** argv) {
     if(ik>0) kpos+=distance(k2, k1, b);
 
     for(ii=0; ii<nen; ii++) {
-      if(ii%20==0) {
+      if(ii%10==0) {
         fgets(line, MAXLEN, fin);
-        p=line;
+        p=strtok(line, " ");
+      }
+      else {
+        p=strtok(NULL, " ");
       }
       sscanf(p, " %lf", &dos);
       printf("%12.8f%12.8f%12.8f\n", kpos, (ii/1000.0), dos);
-      p+=12;
     }
 
     k1.x[0]=k2.x[0];

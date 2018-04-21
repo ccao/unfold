@@ -1,7 +1,7 @@
 !
 program unfold
   !
-  use para,        only : init_para, finalize_para
+  use para,        only : init_para, finalize_para, inode
   use constants,   only : dp, stdout
   use wanndata,    only : read_ham, finalize_wann, read_reduced_ham
   use mapdata,     only : init_mapping, finalize_mapping
@@ -22,11 +22,11 @@ program unfold
   call init_spec
   call init_mapping
   !
-  write(stdout, '(2I10)') nkpt, nen
+  if (inode.eq.0) write(stdout, '(2I10)') nkpt, nen
   !
   do ik=1, nkpt
     !
-    write(stdout, '(3F16.8)') kvec(:, ik)
+    if (inode.eq.0) write(stdout, '(3F16.8)') kvec(:, ik)
     call calc_spectrum_k(kvec(:,ik))
     call output_spectrum
     !
