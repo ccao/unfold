@@ -12,3 +12,5 @@ To perform calculations:
   3) construct unfold.inp, perform unfolding
   4) postprocess using unfold2plot.x (from utils).
   5) plot
+
+Contact Prof. Chao Cao (ccao@hznu.edu.cn) if you want to know more.
