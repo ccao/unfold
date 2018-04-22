@@ -2,11 +2,11 @@
 program unfold
   !
   use para,        only : init_para, finalize_para, inode
-  use constants,   only : dp, stdout
+  use constants,   only : dp, fout
   use wanndata,    only : read_ham, finalize_wann, read_reduced_ham
   use mapdata,     only : init_mapping, finalize_mapping
   use specdata,    only : nen, init_spec, finalize_spec
-  use input,       only : kvec, nkpt, seed, finalize_input, read_input, fmode
+  use input,       only : kvec, nkpt, elow, ehigh, seed, finalize_input, read_input, fmode
   !
   implicit none
   !
@@ -22,15 +22,20 @@ program unfold
   call init_spec
   call init_mapping
   !
-  if (inode.eq.0) write(stdout, '(2I10)') nkpt, nen
+  if (inode.eq.0) then
+    open(unit=fout, file="unfold.dat")
+    write(fout, '(2I10,2F24.16)') nkpt, nen, elow, ehigh
+  endif
   !
   do ik=1, nkpt
     !
-    if (inode.eq.0) write(stdout, '(3F16.8)') kvec(:, ik)
+    if (inode.eq.0) write(fout, '(3F16.8)') kvec(:, ik)
     call calc_spectrum_k(kvec(:,ik))
     call output_spectrum
     !
   enddo ! ik
+  !
+  close(unit=fout)
   !
   call finalize_input
   call finalize_spec

@@ -22,9 +22,10 @@ int main(int argc, char ** argv) {
   int nkpt, nen;
   char line[MAXLEN];
   char * p;
-  FILE * fin;
+  FILE * fin, * fout;
+  double elow, ehigh;
+  double * kpos, * dos;
   int ik, ii;
-  double dos, kpos;
   poscar psc;
   vector a[3], b[3], k1, k2;
 
@@ -48,14 +49,20 @@ int main(int argc, char ** argv) {
 
   fin=fopen(argv[1], "r");
   fgets(line, MAXLEN, fin);
-  sscanf(line, " %d %d", &nkpt, &nen);
+  sscanf(line, " %d %d %lf %lf", &nkpt, &nen, &elow, &ehigh);
 
-  kpos=0.0;
+  kpos=(double *)malloc(sizeof(double)*nkpt);
+  dos=(double *)malloc(sizeof(double)*nkpt*nen);
+
   for(ik=0; ik<nkpt; ik++) {
-    printf("\n");
     fgets(line, MAXLEN, fin);
     sscanf(line, " %lf %lf %lf", &(k2.x[0]), &(k2.x[1]), &(k2.x[2]));
-    if(ik>0) kpos+=distance(k2, k1, b);
+    if(ik>0) {
+      kpos[ik]=distance(k2, k1, b)+kpos[ik-1];
+    }
+    else {
+      kpos[ik]=0.0;
+    }
 
     for(ii=0; ii<nen; ii++) {
       if(ii%10==0) {
@@ -65,14 +72,35 @@ int main(int argc, char ** argv) {
       else {
         p=strtok(NULL, " ");
       }
-      sscanf(p, " %lf", &dos);
-      printf("%12.8f%12.8f%12.8f\n", kpos, (ii/1000.0), dos);
+      sscanf(p, " %lf", dos+ik*nen+ii);
     }
 
     k1.x[0]=k2.x[0];
     k1.x[1]=k2.x[1];
     k1.x[2]=k2.x[2];
   }
+
+  fout=fopen("plot.dat", "w");
+  fprintf(fout, "%10d%10d", nkpt, nen);
+  for(ik=0; ik<nkpt; ik++) {
+    if (ik%10==0) fprintf(fout,"\n");
+    fprintf(fout, "%14.9f ", kpos[ik]);
+  }
+  for(ii=0; ii<nen; ii++) {
+    if (ii%10==0) fprintf(fout,"\n");
+    fprintf(fout, "%14.9f ", elow+ii*(ehigh-elow)/(nen-1));
+  }
+  for(ik=0; ik<nkpt; ik++) {
+    for(ii=0; ii<nen; ii++) {
+      if (ii%10==0) fprintf(fout,"\n");
+      fprintf(fout, "%14.9f ", dos[ik*nen+ii]);
+    }
+  }
+  fclose(fout);
+
+  free(kpos);
+  free(dos);
+
   fclose(fin);
   finalize_poscar(psc);
   return 0;
