@@ -3,7 +3,7 @@ include ../make.sys
 objects = vector.o wanndata.o poscar.o mapping.o read_orbdef.o rotate_ham.o
 
 
-all: extend_ham preprocess unfold2plot dope_ham mixham test
+all: extend_ham preprocess unfold2plot dope_ham mixham symmham
 
 extend_ham: extend_ham.c $(objects)
 	$(CC) $(CFLAGS) -o extend_ham.x extend_ham.c $(objects) -lm
@@ -17,8 +17,8 @@ dope_ham: dope_ham.c $(objects)
 mixham: mixham.c $(objects)
 	$(CC) $(CFLAGS) -o mixham.x mixham.c $(objects) -lm
 
-test: test.c $(objects)
-	$(CC) $(CFLAGS) -o test.x test.c $(objects) -lm
+symmham: symmham.c $(objects)
+	$(CC) $(CFLAGS) -o symmham.x symmham.c $(objects) -lm
 
 clean:
 	rm -rf *.o *.mod *.x
