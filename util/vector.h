@@ -15,5 +15,6 @@ void vector_add(vector * vr, vector v1, vector v2);
 void vector_sub(vector * vr, vector v1, vector v2);
 int translate_match(vector *rv, vector x1, vector x2);
 int isenclosed(vector v1, vector v2);
+int find_vector(vector v, vector * list, int nlist);
 
 #endif

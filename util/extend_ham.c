@@ -121,9 +121,9 @@ int main(int argc, char ** argv) {
 
   extend_wann(&wann_sc, &wann_uc, map, n);
 /*
-  write_ham(&wann_sc);
+  write_ham(&wann_sc, "output");
 */
-  write_reduced_ham(&wann_sc);
+  write_reduced_ham(&wann_sc, "output");
 
   finalize_wanndata(wann_uc);
   finalize_wanndata(wann_sc);

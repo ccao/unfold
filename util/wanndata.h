@@ -17,7 +17,8 @@ typedef struct __wanndata {
 void init_wanndata(wanndata * wann);
 void read_ham(wanndata * wann, char * seed);
 void finalize_wanndata(wanndata wann);
-void write_ham(wanndata * wann);
+void write_ham(wanndata * wann, char * seed);
+void write_reduced_ham(wanndata * wann, char * seed);
 int locate_rpt(wanndata * wann, vector vr);
 
 #endif

@@ -89,3 +89,12 @@ int isenclosed(vector v1, vector v2) {
            fabs(v1.x[1])<=v2.x[1] &&
            fabs(v1.x[2])<=v2.x[2] );
 }
+
+int find_vector(vector v, vector * list, int nlist) {
+  int ii;
+  for (ii=0; ii<nlist; ii++) {
+    if (equal(v, list[ii]))
+      return ii;
+  }
+  return -1;
+}

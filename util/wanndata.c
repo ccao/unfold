@@ -70,54 +70,76 @@ void finalize_wanndata(wanndata wann) {
   free(wann.ham);
 }
 
-void write_ham(wanndata * wann) {
+void write_ham(wanndata * wann, char * seed) {
   int irpt, iorb, jorb;
-  printf("# Wannier Hamiltonian extended to supercell\n");
-  printf("%5d\n%5d", wann->norb, wann->nrpt);
-  for(irpt=0; irpt<wann->nrpt; irpt++) {
-    if(irpt%15==0) printf("\n");
-    printf("%5d", wann->weight[irpt]);
+  FILE * fout;
+  char fn[MAXLEN];
+
+  if (fn==NULL) {
+    fout=stdout;
   }
-  printf("\n");
+  else {
+    sprintf(fn, "%s_hr.dat", seed);
+    fout=fopen(fn, "w");
+  }
+  fprintf(fout, "# Wannier Hamiltonian extended to supercell\n");
+  fprintf(fout, "%5d\n%5d", wann->norb, wann->nrpt);
+  for(irpt=0; irpt<wann->nrpt; irpt++) {
+    if(irpt%15==0) fprintf(fout, "\n");
+    fprintf(fout, "%5d", wann->weight[irpt]);
+  }
+  fprintf(fout, "\n");
 
   for(irpt=0; irpt<wann->nrpt; irpt++) {
     for(iorb=0; iorb<wann->norb; iorb++) {
       for(jorb=0; jorb<wann->norb; jorb++) {
-        printf("%5d%5d%5d%5d%5d%12.6f%12.6f\n", 
+        fprintf(fout, "%5d%5d%5d%5d%5d%22.16f%22.16f\n", 
           (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2], 
-          iorb+1, jorb+1,
+          jorb+1, iorb+1,
           creal(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]),
           cimag(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]));
       }
     }
   }
+  if (fn)  fclose(fout);
 }
 
-void write_reduced_ham(wanndata * wann) {
+void write_reduced_ham(wanndata * wann, char * seed) {
   int irpt, iorb, jorb;
   int iirpt;
   long long int nwann;
   vector rv;
+  char fn[MAXLEN];
 
-  printf("# Wannier Hamiltonian extended to supercell\n");
-  printf("%5d\n%5d", wann->norb, wann->nrpt);
-  for(irpt=0; irpt<wann->nrpt; irpt++) {
-    if(irpt%15==0) printf("\n");
-    printf("%5d", wann->weight[irpt]);
+  FILE * fout;
+
+  if (fn==NULL) {
+    fout=stdout;
   }
-  printf("\n");
+  else {
+    sprintf(fn, "%s_hr.dat", seed);
+    fout=fopen(fn, "w");
+  }
+
+  fprintf(fout, "# Wannier Hamiltonian extended to supercell\n");
+  fprintf(fout, "%5d\n%5d", wann->norb, wann->nrpt);
+  for(irpt=0; irpt<wann->nrpt; irpt++) {
+    if(irpt%15==0) fprintf(fout, "\n");
+    fprintf(fout, "%5d", wann->weight[irpt]);
+  }
+  fprintf(fout, "\n");
 
   nwann=0;
 
   for(irpt=0; irpt<wann->nrpt; irpt++) {
-    printf("%5d%5d%5d\n", (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2]);
+    fprintf(fout, "%5d%5d%5d\n", (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2]);
     for(iorb=0; iorb<wann->norb; iorb++)
       for(jorb=0; jorb<=iorb; jorb++)
         if(cabs(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb])>eps8)
           nwann++;
   }
 
-  printf("%ld\n", nwann);
+  fprintf(fout, "%ld\n", nwann);
 
   for(irpt=0; irpt<wann->nrpt; irpt++) {
     rv.x[0]=-(wann->rvec+irpt)->x[0];
@@ -127,7 +149,7 @@ void write_reduced_ham(wanndata * wann) {
     for(iorb=0; iorb<wann->norb; iorb++) {
       for(jorb=0; jorb<=iorb; jorb++) {
         if(cabs(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb])>eps8) {
-          printf("%5d%5d%5d%5d%12.6f%12.6f\n",
+          fprintf(fout, "%5d%5d%5d%5d%22.16f%22.16f\n",
             iorb+1, jorb+1, irpt+1, iirpt+1,
             creal(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]),
             cimag(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb]));
@@ -135,11 +157,12 @@ void write_reduced_ham(wanndata * wann) {
                   creal(wann->ham[iirpt*wann->norb*wann->norb+jorb*wann->norb+iorb]))>eps8 ||
              fabs(cimag(wann->ham[irpt*wann->norb*wann->norb+iorb*wann->norb+jorb])+
                   cimag(wann->ham[iirpt*wann->norb*wann->norb+jorb*wann->norb+iorb]))>eps8) 
-            printf("!!!!WARNING: Unhermitian Hamiltonian:%5d%5d%5d%5d%5d\n", iorb+1, jorb+1, (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2]);
+            fprintf(fout, "!!!!WARNING: Unhermitian Hamiltonian:%5d%5d%5d%5d%5d\n", iorb+1, jorb+1, (int)(wann->rvec+irpt)->x[0], (int)(wann->rvec+irpt)->x[1], (int)(wann->rvec+irpt)->x[2]);
         }
       }
     }
   }
+  if (fn) fclose(fout);
 }
 
 int locate_rpt(wanndata * wann, vector vr) {

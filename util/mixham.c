@@ -71,7 +71,7 @@ main(int argc, char ** argv) {
     shift_ham(&wann1, ef1);
     shift_ham(&wann2, ef2);
     mix_ham(&wann, &wann1, &wann2, x);
-    write_ham(&wann);
+    write_ham(&wann, "output");
   }
 
   finalize_wanndata(wann1);

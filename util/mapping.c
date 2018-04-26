@@ -3,6 +3,9 @@
 #include "mapping.h"
 
 int setup_mapping(mapping * map, vector * target, vector * source, vector * shift, int * info_tgt, int * info_src, int ntgt, int nsrc) {
+/*
+ * This function finds mapping between two systems
+ */
   int ii, jj;
   vector vt;
 
@@ -11,9 +14,7 @@ int setup_mapping(mapping * map, vector * target, vector * source, vector * shif
       vector_add(&vt, target[ii], (*shift));
     }
     else {
-      vt.x[0]=(target+ii)->x[0];
-      vt.x[1]=(target+ii)->x[1];
-      vt.x[2]=(target+ii)->x[2];
+      vt=target[ii];
     }
 
     for(jj=0; jj<nsrc; jj++) {
@@ -35,4 +36,46 @@ int setup_mapping(mapping * map, vector * target, vector * source, vector * shif
   }
 
   return 0;
+}
+
+int setup_symm_mapping(mapping * map, vector * symm, vector * shift, vector * site, int * info, int nsite) {
+/*
+ * This function performs a symmetry operation, and finds out the mapping of orbitals
+ *   between the systems before and after the symmetry operation.
+ *
+ * output:
+ *   map  :  The mapping between orbitals
+ * input:
+ *   symm :  The symmetry operation. symm[0:2] defines R, symm[3] defines T
+ *   shift:  Additional translation, if desired
+ *   site :  orbital sites
+ *   info :  additional orbital labels
+ *   nsite:  Number of orbital sites
+ */
+
+  int ii, jj;
+  int result;
+
+  vector * tgt;
+
+  tgt=(vector *) malloc(sizeof(vector)*nsite);
+
+  for (ii=0; ii<nsite; ii++) {
+    /*
+     * Performs the symmetry operation
+     *   Each operation consists of a 
+     *    rotation R followed by a
+     *    translation T.
+     *   x'=R*x+T
+     */
+    for (jj=0; jj<3; jj++ )
+      tgt[ii].x[jj]=dot_product(symm[jj], site[ii])+symm[3].x[jj];
+  }
+
+
+  result=setup_mapping(map, tgt, site, shift, info, info, nsite, nsite);
+
+  free(tgt);
+
+  return result;
 }
