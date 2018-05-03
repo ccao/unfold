@@ -5,16 +5,15 @@
 #include "poscar.h"
 
 void real_to_reciprocal(vector * b, vector * a) {
-  int i, j;
+  int i;
   double vol;
   vol=volume_product(a[0], a[1], a[2]);
-  cross_product(&(b[0]), a[1], a[2]);
-  cross_product(&(b[1]), a[2], a[0]);
-  cross_product(&(b[2]), a[0], a[1]);
+  b[0]=cross_product(a[1], a[2]);
+  b[1]=cross_product(a[2], a[0]);
+  b[2]=cross_product(a[0], a[1]);
+
   for(i=0; i<3; i++) {
-    for(j=0; j<3; j++) {
-      b[i].x[j]/=vol;
-    }
+    b[i]=vector_scale(1/vol, b[i]);
   }
 }
 
@@ -37,14 +36,14 @@ int main(int argc, char ** argv) {
 
   printf("#  Read unit cell lattices:\n");
   for(ii=0; ii<3; ii++) {
-    printf("#   %12.8f%12.8f%12.8f\n", (psc.cell+ii)->x[0], (psc.cell+ii)->x[1], (psc.cell+ii)->x[2]);
+    printf("#   %12.8f%12.8f%12.8f\n", (psc.cell+ii)->x, (psc.cell+ii)->y, (psc.cell+ii)->z);
   }
 
   real_to_reciprocal(b, psc.cell);
 
   printf("#  Reciprocal lattice:\n");
   for(ii=0; ii<3; ii++) {
-    printf("#   %12.8f%12.8f%12.8f\n", b[ii].x[0], b[ii].x[1], b[ii].x[2]);
+    printf("#   %12.8f%12.8f%12.8f\n", b[ii].x, b[ii].y, b[ii].z);
   }
 
   fin=fopen(argv[1], "r");
@@ -56,7 +55,7 @@ int main(int argc, char ** argv) {
 
   for(ik=0; ik<nkpt; ik++) {
     fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf", &(k2.x[0]), &(k2.x[1]), &(k2.x[2]));
+    sscanf(line, " %lf %lf %lf", &(k2.x), &(k2.y), &(k2.z));
     if(ik>0) {
       kpos[ik]=distance(k2, k1, b)+kpos[ik-1];
     }
@@ -75,9 +74,7 @@ int main(int argc, char ** argv) {
       sscanf(p, " %lf", dos+ik*nen+ii);
     }
 
-    k1.x[0]=k2.x[0];
-    k1.x[1]=k2.x[1];
-    k1.x[2]=k2.x[2];
+    k1=k2;
   }
 
   fout=fopen("plot.dat", "w");

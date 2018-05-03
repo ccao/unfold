@@ -24,10 +24,8 @@ void read_poscar_header(poscar * psc, FILE * fin) {
 
   for(ii=0; ii<3; ii++) {
     fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf", (psc->cell+ii)->x, (psc->cell+ii)->x+1, (psc->cell+ii)->x+2);
-    (psc->cell[ii]).x[0]*=lat;
-    (psc->cell[ii]).x[1]*=lat;
-    (psc->cell[ii]).x[2]*=lat;
+    sscanf(line, " %lf %lf %lf", &((psc->cell+ii)->x), &((psc->cell+ii)->y), &((psc->cell+ii)->z));
+    psc->cell[ii]=vector_scale(lat, psc->cell[ii]);
   }
 
   fgets(line, MAXLEN, fin);
@@ -72,7 +70,7 @@ void read_poscar(poscar * psc, char * fn) {
   fgets(line, MAXLEN, fin);
   for(ii=0; ii<psc->nat; ii++) {
     fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf ", (psc->tau+ii)->x, (psc->tau+ii)->x+1, (psc->tau+ii)->x+2);
+    sscanf(line, " %lf %lf %lf ", &((psc->tau+ii)->x), &((psc->tau+ii)->y), &((psc->tau+ii)->z));
   }
   fclose(fin);
 }

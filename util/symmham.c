@@ -39,7 +39,7 @@ int main(int argc, char ** argv) {
 
   for (ii=0; ii<nwann; ii++) {
     fgets(line, MAXLEN, fin);
-    sscanf(line, " %lf %lf %lf %d", site[ii].x, site[ii].x+1, site[ii].x+2, info+ii);
+    sscanf(line, " %lf %lf %lf %d", &(site[ii].x, site[ii].x+1, site[ii].x+2, info+ii);
   }
 
   fgets(line, MAXLEN, fin);
